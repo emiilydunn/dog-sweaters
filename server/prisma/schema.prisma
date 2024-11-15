@@ -15,6 +15,7 @@ model product {
   product_id     Int     @id @default(autoincrement())
   name           String
   description    String
+  type           String
   cost           Decimal
   colour         String
   image_filename String
