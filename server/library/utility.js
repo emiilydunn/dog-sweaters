@@ -1,4 +1,4 @@
-/*import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 
 //Hash the password
 async function hashPassword(plaintextPassword) {
@@ -12,4 +12,4 @@ async function comparePassword(plaintextPassword, hash) {
     return await bcrypt.compare(plaintextPassword, hash);
   }
 
-  export { hashPassword, comparePassword }*/
+  export { hashPassword, comparePassword }

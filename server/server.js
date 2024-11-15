@@ -11,6 +11,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 //CORS
+//Will add more middleware once we start front-end
 app.use(cors());
 
 //Routes
