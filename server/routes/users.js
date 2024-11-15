@@ -1,8 +1,10 @@
 import express from 'express';
 
+
 const router = express.Router();
 
-//Routes
+//Multer is not needed for image handling here
+//CRUD Operations
 //Signup
 router.get('/signup', (req, res) => {
     res.send('Sign-Up');

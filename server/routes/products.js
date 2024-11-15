@@ -1,7 +1,9 @@
 import express from 'express';
+import multer from 'multer';
 
 const router = express.Router();
 
+//Set up Multer for image handling 
 //Routes
 //Get all products
 router.get('/all', (req, res) => {
