@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import usersRouter from './routes/users.js';
+import productsRouter from './routes/products.js';
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -13,6 +15,12 @@ app.use(express.static('public'));
 app.use(cors());
 
 //Routes
+//Users
+app.use('/api/users', usersRouter)
+
+//Products
+app.use('/api/products', productsRouter);
+
 //Testing
 //app.send('Hello Dog Sweaters');
 
