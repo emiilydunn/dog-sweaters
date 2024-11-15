@@ -14,7 +14,7 @@ app.use(cors());
 
 //Routes
 //Testing
-app.send('Hello Dog Sweaters');
+//app.send('Hello Dog Sweaters');
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
