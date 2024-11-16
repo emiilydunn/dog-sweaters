@@ -77,13 +77,6 @@ router.post('/login', async (req, res) => {
 });
 
 
-
-
-
-
-
-
-
 //Logout
 router.get('/logout', (req, res) => {
     res.send('Logout');
