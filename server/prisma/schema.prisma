@@ -10,21 +10,56 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//Prisma docs to help with composite keys: https://www.prisma.io/docs/orm/prisma-client/special-fields-and-types/working-with-composite-ids-and-constraints
 //Decimal: https://www.prisma.io/docs/orm/overview/databases/sqlite
 model product {
-  product_id     Int     @id @default(autoincrement())
+  product_id     Int            @id @default(autoincrement()) //Primary key
   name           String
   description    String
   type           String
   cost           Decimal
   colour         String
   image_filename String
+  purchaseItems  PurchaseItem[]  //Relation to PurchaseItem
 }
 
 model customer {
-  customer_id Int    @id @default(autoincrement())
-  email       String @unique
+  customer_id Int         @id @default(autoincrement()) //Primary key
+  email       String      @unique
   password    String
   first_name  String
   last_name   String
+  purchases   Purchase[]  //Relation to Purchase
+}
+
+// Sprint 2 Migration
+model Purchase {
+  purchase_id   Int      @id @default(autoincrement()) //Primary key
+  customer_id   Int
+  street        String
+  city          String
+  province      String
+  country       String
+  postal_code   String
+  credit_card   String
+  credit_expire String
+  credit_cvv    String
+  invoice_amt   Decimal
+  invoice_tax   Decimal
+  invoice_total Decimal
+  order_date    DateTime
+
+  customer      customer       @relation(fields: [customer_id], references: [customer_id]) //Relation to customer
+  purchaseItems PurchaseItem[] //Relation to PurchaseItem
+}
+
+model PurchaseItem {
+  purchase_id Int
+  product_id  Int
+  quantity    Int
+
+  purchase    Purchase  @relation(fields: [purchase_id], references: [purchase_id]) //Relationship with Purchase
+  product     product   @relation(fields: [product_id], references: [product_id])   //Relationship with Product
+
+  @@id([purchase_id, product_id]) //Composite primary key
 }
