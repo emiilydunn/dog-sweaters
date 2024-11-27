@@ -72,18 +72,40 @@ router.post('/login', async (req, res) => {
     if (!passwordMatch) {
         return res.status(401).send('Invalid password. Please try again.');
     }
+
+    //Setup user session
+    //Store user email in session, and ass customer_id, email, first_name, and last_name to the session.
+    req.session.customer_id = existingCustomer.customer_id; 
+    req.session.email = existingCustomer.email;
+    req.session.first_name = existingCustomer.first_name;
+    req.session.last_name = existingCustomer.last_name;
+
     //Send response
     res.status(200).send(`User ${email} successfully logged in.`);
 });
 
+//getSession
+router.get('/getSession', (req, res) => {
+    //Check if session exists
+    if(req.session && req.session.email){
+        res.json({
+            customer_id: req.session.customer_id,
+            email: req.session.email,
+            first_name: req.session.first_name,
+            last_name: req.session.last_name,
+        });
+    } else {
+        res.status(401).send('No user logged in. Please try again.');
+    }
+    
+});
 
 //Logout
 router.get('/logout', (req, res) => {
-    res.send('Logout');
-});
-//getSession
-router.get('/getSession', (req, res) => {
-    res.send('Get Session');
+    req.session.destroy();
+    res.json({message: 'You have successfully logged out.'});
 });
 
+
 export default router;
+
