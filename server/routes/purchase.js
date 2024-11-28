@@ -32,8 +32,7 @@ router.post('/', async (req, res) => {
     }
 
     //Convert data types
-    const creditCardNumber = credit_card.toString(); //Storing as string
-    const creditCVV = parseInt(credit_cvv, 10);
+    const creditCVV = parseInt(credit_cvv);
     const invoiceAmount = parseFloat(invoice_amt);
     const invoiceTax = parseFloat(invoice_tax);
     const invoiceTotal = parseFloat(invoice_total);
@@ -42,11 +41,12 @@ router.post('/', async (req, res) => {
     const productIDs = cart.split(',').map(id => parseInt(id, 10));
     const productQuantity = {};
 
+    //Count the quantity of each product ID in the cart
     productIDs.forEach(id => {
         productQuantity[id] = (productQuantity[id] || 0) + 1;
     });
 
-    //Validate that all product IDs exist
+    //Validate that all product IDs exist in the database
     const products = await prisma.product.findMany({
         where: {
             product_id: {
@@ -55,9 +55,11 @@ router.post('/', async (req, res) => {
         }
     });
 
+    //Extract the valid product IDs from the database results and identify any invalid product IDs
     const validProductIds = products.map(product => product.product_id);
     const invalidProductIds = productIDs.filter(id => !validProductIds.includes(id));
 
+    //If there are any invalid product IDs, return an error(this may not be necessary for the UI part)
     if (invalidProductIds.length > 0) {
         return res.status(400).send(`Invalid product IDs: ${invalidProductIds.join(', ')}`);
     }
@@ -71,13 +73,13 @@ router.post('/', async (req, res) => {
             province,
             country,
             postal_code,
-            credit_card: creditCardNumber,
-            credit_expire: new Date(credit_expire), // Convert to Date
+            credit_card,
+            credit_expire: new Date(credit_expire), //Make sure it's date
             credit_cvv: creditCVV,
             invoice_amt: invoiceAmount,
             invoice_tax: invoiceTax,
             invoice_total: invoiceTotal,
-            order_date: new Date(), // Set the current date
+            order_date: new Date(), //Set the current date
         },
     });
 
