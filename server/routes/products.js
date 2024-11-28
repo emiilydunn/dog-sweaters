@@ -40,12 +40,5 @@ router.get('/:id', async (req, res) => {
 
 
 
-//Purchase
-router.get('/purchase', (req, res) => {
-    res.send('Purchase');
-});
-
-
-
 
 export default router;

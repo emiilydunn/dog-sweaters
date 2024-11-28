@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import usersRouter from './routes/users.js';
 import productsRouter from './routes/products.js';
+import purchaseRouter from './routes/purchase.js';
 import session from 'express-session';
 
 const port = process.env.PORT || 3000;
@@ -37,6 +38,9 @@ app.use('/api/users', usersRouter)
 
 //Products
 app.use('/api/products', productsRouter);
+
+//Purchase
+app.use('/api/purchase', purchaseRouter);
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

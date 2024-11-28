@@ -41,9 +41,9 @@ model Purchase {
   province      String
   country       String
   postal_code   String
-  credit_card   String
-  credit_expire String
-  credit_cvv    String
+  credit_card   BigInt
+  credit_expire DateTime
+  credit_cvv    Int
   invoice_amt   Decimal
   invoice_tax   Decimal
   invoice_total Decimal
