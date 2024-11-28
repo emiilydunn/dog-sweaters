@@ -5,12 +5,12 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 router.post('/', async (req, res) => {
-    // Check if user is logged in
+    //Check if user is logged in
     if (!req.session || !req.session.customer_id) {
         return res.status(401).send('Unauthorized: Please log in to complete a purchase.');
     }
 
-    // Extract and validate inputs
+    //Extract and validate inputs
     const {
         street,
         city,
@@ -26,19 +26,19 @@ router.post('/', async (req, res) => {
         invoice_total,
     } = req.body;
 
-    // Check if any required fields are missing
+    //Check if any required fields are missing
     if (!street || !city || !province || !country || !postal_code || !credit_card || !credit_expire || !credit_cvv || !cart || !invoice_amt || !invoice_tax || !invoice_total) {
         return res.status(400).send('Missing required fields.');
     }
 
-    // Convert data types
-    const creditCardNumber = credit_card.toString(); // Storing as string
+    //Convert data types
+    const creditCardNumber = credit_card.toString(); //Storing as string
     const creditCVV = parseInt(credit_cvv, 10);
     const invoiceAmount = parseFloat(invoice_amt);
     const invoiceTax = parseFloat(invoice_tax);
     const invoiceTotal = parseFloat(invoice_total);
 
-    // Process cart: Mapping product IDs to quantities
+    //Process cart: Mapping product IDs to quantities
     const productIDs = cart.split(',').map(id => parseInt(id, 10));
     const productQuantity = {};
 
@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
         productQuantity[id] = (productQuantity[id] || 0) + 1;
     });
 
-    // Validate that all product IDs exist
+    //Validate that all product IDs exist
     const products = await prisma.product.findMany({
         where: {
             product_id: {
@@ -62,7 +62,7 @@ router.post('/', async (req, res) => {
         return res.status(400).send(`Invalid product IDs: ${invalidProductIds.join(', ')}`);
     }
 
-    // Create purchase in the database (in a transaction for consistency)
+    //Create purchase in the database (in a transaction for consistency)
     const purchase = await prisma.purchase.create({
         data: {
             customer_id: req.session.customer_id,
@@ -81,7 +81,7 @@ router.post('/', async (req, res) => {
         },
     });
 
-    // Create purchase items for each product in the cart
+    //Create purchase items for each product in the cart
     const purchaseItems = Object.entries(productQuantity).map(([product_id, quantity]) => ({
         purchase_id: purchase.purchase_id,
         product_id: parseInt(product_id, 10),
@@ -92,7 +92,7 @@ router.post('/', async (req, res) => {
         data: purchaseItems,
     });
 
-    // Success response
+    //Success response
     return res.json({ message: 'Purchase successful', purchase_id: purchase.purchase_id });
 });
 
