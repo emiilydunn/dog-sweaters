@@ -16,7 +16,9 @@ app.use(express.static('public'));
 //CORS
 //Will add more middleware once we start front-end
 app.use(cors({
-    credentials: true
+    credentials: true,
+    origin: 'http://localhost:5173'
+    
 }));
 
 //Express-session middleware 
