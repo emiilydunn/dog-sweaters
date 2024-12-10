@@ -39,11 +39,11 @@ export default function Signup() {
                     <div className="mb-3">
                         <label className="form-label">First Name</label>
                         <input
-                            {...register("first_name", { required: true })}
+                            {...register("first_name", { required: "First Name is required." })}
                             type="text"
                             className="form-control bg-light"
                         />
-                        {errors.first_name && <span className="text-danger">First Name is required.</span>}
+                        {errors.first_name && <span className="text-danger">{errors.first_name.message}</span>}
                     </div>
                     <div className="mb-3">
                         <label className="form-label">Last Name</label>
@@ -81,5 +81,3 @@ export default function Signup() {
         </div>
     );
 }
-
-//NOTE: If I had more time, I would spend it on better and more specific data validation, as well as creating specific error pages. 

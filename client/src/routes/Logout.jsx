@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function Logout() {
     const [status, setStatus] = useState("Logging out...");
-    const setIsLoggedIn = useOutletContext();  // Get setIsLoggedIn from context
+    const [isLoggedIn, setIsLoggedIn] = useOutletContext();  // Access setIsLoggedIn from context
 
     useEffect(() => {
         async function logout() {

@@ -1,12 +1,12 @@
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom"; // We will use this to redirect after login
-import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useOutletContext } from 'react-router-dom';
 
 export default function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [loginFail, setLoginFail] = useState(false);
-    const setIsLoggedIn = useOutletContext();  // Get setIsLoggedIn from context
+    const [isLoggedIn, setIsLoggedIn] = useOutletContext();  // Access isLoggedIn and setIsLoggedIn from context
     const navigate = useNavigate(); // Navigate after successful login
 
     // form submit function

@@ -44,15 +44,11 @@ model Purchase {
   credit_card   BigInt
   credit_expire DateTime
   credit_cvv    Int
-  invoice_amt   Decimal
-  invoice_tax   Decimal
-  invoice_total Decimal
   order_date    DateTime
 
   customer      customer       @relation(fields: [customer_id], references: [customer_id]) //Relation to customer
   purchaseItems PurchaseItem[] //Relation to PurchaseItem
 }
-
 model PurchaseItem {
   purchase_id Int
   product_id  Int

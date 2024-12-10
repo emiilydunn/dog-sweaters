@@ -11,7 +11,7 @@ function App() {
         <Nav isLoggedIn={isLoggedIn} />
       </div>
       <div>
-        <Outlet context={setIsLoggedIn} /> {/* Pass the setIsLoggedIn method to the Outlet */}
+        <Outlet context={[isLoggedIn, setIsLoggedIn]} /> 
       </div>
     </>
   );

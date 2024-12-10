@@ -17,35 +17,33 @@ export default function Cart() {
 
     useEffect(() => {
         const fetchCartDetails = async () => {
-            const cartCookie = cookies.cart + ',' || ''; // Get the cart cookie
+            const cartCookie = cookies.cart || ''; // Ensure we handle an empty cookie
             const cartArray = cartCookie.split(',').filter(Boolean); // Turn it into an array of product IDs
-           
-
+    
             if (cartArray.length === 0) {
                 setCartItems([]);
                 setSubTotal(0);
-                return;
+                return; // Exit early if the cart is empty
             }
-
+    
             const productCounts = {};
             cartArray.forEach((id) => {
                 productCounts[id] = (productCounts[id] || 0) + 1;
             });
-
+    
             const uniqueProductIds = Object.keys(productCounts);
             const products = [];
             let total = 0;
-
-            // Fetch product details for each unique product
+    
             for (const id of uniqueProductIds) {
                 const response = await fetch(`${apiHost}/api/products/${id}`);
                 if (response.ok) {
                     const product = await response.json();
                     const quantity = productCounts[id];
                     const totalCost = quantity * product.cost;
-
+    
                     total += totalCost; // Update subtotal
-
+    
                     products.push({
                         id,
                         name: product.name,
@@ -56,38 +54,38 @@ export default function Cart() {
                     });
                 }
             }
-
-            // Update cart state
+    
             setCartItems(products);
-            setSubTotal(total.toFixed(2)); // Set the subtotal state
+            setSubTotal(total.toFixed(2));
         };
-
+    
         fetchCartDetails();
-    }, [cookies.cart]); // Run effect when cookies.cart changes
+    }, [cookies.cart]);
 
     const handleRemoveItem = (id) => {
         // Remove the item from the cart cookie
         const cartArray = cookies.cart ? cookies.cart.split(',') : [];
         const updatedCart = cartArray.filter((itemId) => itemId !== id);
-
-        // Update the cookie with the new cart
+    
+        // Update the cookie and state
         if (updatedCart.length === 0) {
-            setCookie('cart', '', { path: '/', maxAge: 3600 }); // Clear the cookie if cart is empty
+            // Clear the cookie and set the cart state to empty
+            setCookie('cart', '', { path: '/', maxAge: 3600 });
+            setCartItems([]);
+            setSubTotal(0); // Reset the subtotal
         } else {
-            setCookie('cart', updatedCart.join(','), { path: '/', maxAge: 3600 }); // Update cookie with new cart
+            setCookie('cart', updatedCart.join(','), { path: '/', maxAge: 3600 });
+            setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    
+            // Recalculate the subtotal after removing the item
+            const newSubTotal = updatedCart.reduce((total, itemId) => {
+                const item = cartItems.find((item) => item.id === itemId);
+                return item ? total + parseFloat(item.price) * item.quantity : total;
+            }, 0);
+            setSubTotal(newSubTotal.toFixed(2));
         }
-
-        // Remove the item from the UI (cartItems state)
-        setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
-
-
-        // Recalculate the subtotal after removing the item
-        const newSubTotal = updatedCart.reduce((total, itemId) => {
-            const item = cartItems.find((item) => item.id === itemId);
-            return item ? total + parseFloat(item.total) : total;
-        }, 0);
-        setSubTotal(newSubTotal.toFixed(2)); // Set the new subtotal
     };
+    
 
     const tax = calculateTax(subTotal);
     const total = calculateTotal(subTotal, tax);
