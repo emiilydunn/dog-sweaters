@@ -19,7 +19,7 @@
   background-color: black !important;
   border-radius: 0 !important;
   border: 1px solid black !important;
-  color: white;
+  color: white !important;
 }
 
 .cart-btn:hover{

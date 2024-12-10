@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export default function CheckoutPage() {
     const [cart, setCart] = useState([]);
-    const [isLoggedIn, setIsLoggedIn] = useOutletContext(); // Destructure the context
+    const [isLoggedIn, setIsLoggedIn] = useOutletContext();
     const { register, handleSubmit, formState: { errors } } = useForm();
     const navigate = useNavigate();
     const [loginFail, setLoginFail] = useState(false);
@@ -16,33 +16,12 @@ export default function CheckoutPage() {
         setCart(savedCart);
     }, []);
 
-    // Check if user is logged in
-    useEffect(() => {
-        const checkLoginStatus = async () => {
-            const apiHost = import.meta.env.VITE_API_HOST;
-            const apiURL = `${apiHost}/api/users/getsession`;
-
-            const response = await fetch(apiURL, {
-                method: "GET",
-                credentials: 'include', // Ensure cookies are sent with the request
-            });
-
-            if (response.ok) {
-                setIsLoggedIn(true); // Set logged-in status
-            } else {
-                setIsLoggedIn(false); // Set logged-out status
-            }
-        };
-
-        checkLoginStatus();
-    }, [setIsLoggedIn]);
-
-    // Handle form submission for checkout
     const handleCheckout = async (data) => {
+        console.log("handleCheckout is called");
+    
         const apiHost = import.meta.env.VITE_API_HOST;
         const apiURL = `${apiHost}/api/purchase`;
-
-        // Include cart data along with form data
+    
         const response = await fetch(apiURL, {
             method: 'POST',
             headers: {
@@ -52,27 +31,35 @@ export default function CheckoutPage() {
                 ...data,
                 cart,
             }),
-            credentials: 'include', // Include cookies for session validation
+            credentials: 'include',
         });
-
+    
+        console.log("API response status:", response.status); // Log the status code of the response
+    
         if (response.ok) {
-            window.location.href = '/confirmation';
-            localStorage.removeItem('cart'); // Clear cart from localStorage after successful purchase
-            navigate('/confirmation'); // Redirect to confirmation page
+            console.log("Navigating to confirmation...");
+    
+            // Clear the cart from localStorage
+            localStorage.removeItem('cart');
+    
+            // Clear the cart from cookies by setting the expiration date to a past time
+            document.cookie = "cart=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    
+            navigate('/confirmation');
         } else {
-            alert('Error processing the purchase');
+            console.log("API response failed:", response.status, await response.text()); // Log the failure response
+            setLoginFail(true);
         }
     };
+    
+    
 
-    // If user is not logged in, show the login link
     if (!isLoggedIn) {
         return (
             <div className="d-flex justify-content-center align-items-center min-vh-100">
                 <div className="w-50 text-center">
                     <p>Please log in to complete your purchase.</p>
-                    <div className="d-flex justify-content-center">
                     <Link to="/login" className="btn btn-outline-secondary btn-lg cart-btn">Login</Link>
-                    </div>
                 </div>
             </div>
         );
@@ -88,6 +75,7 @@ export default function CheckoutPage() {
                     </div>
                 )}
                 <form onSubmit={handleSubmit(handleCheckout)}>
+                    {/* Street */}
                     <div className="mb-3">
                         <label className="form-label">Street</label>
                         <input
@@ -97,6 +85,8 @@ export default function CheckoutPage() {
                         />
                         {errors.street && <span className="text-danger">{errors.street.message}</span>}
                     </div>
+
+                    {/* City */}
                     <div className="mb-3">
                         <label className="form-label">City</label>
                         <input
@@ -106,6 +96,8 @@ export default function CheckoutPage() {
                         />
                         {errors.city && <span className="text-danger">{errors.city.message}</span>}
                     </div>
+
+                    {/* Province */}
                     <div className="mb-3">
                         <label className="form-label">Province</label>
                         <input
@@ -115,6 +107,8 @@ export default function CheckoutPage() {
                         />
                         {errors.province && <span className="text-danger">{errors.province.message}</span>}
                     </div>
+
+                    {/* Country */}
                     <div className="mb-3">
                         <label className="form-label">Country</label>
                         <input
@@ -124,6 +118,8 @@ export default function CheckoutPage() {
                         />
                         {errors.country && <span className="text-danger">{errors.country.message}</span>}
                     </div>
+
+                    {/* Postal Code */}
                     <div className="mb-3">
                         <label className="form-label">Postal Code</label>
                         <input
@@ -133,34 +129,59 @@ export default function CheckoutPage() {
                         />
                         {errors.postal_code && <span className="text-danger">{errors.postal_code.message}</span>}
                     </div>
+
+                    {/* Credit Card */}
                     <div className="mb-3">
                         <label className="form-label">Credit Card</label>
                         <input
-                            {...register('credit_card', { required: 'Credit card is required' })}
+                            {...register('credit_card', { 
+                                required: 'Credit card is required', 
+                                pattern: {
+                                    value: /^\d{16}$/, 
+                                    message: 'Credit card must be 16 digits.'
+                                }
+                            })}
                             type="text"
                             className="form-control"
                         />
                         {errors.credit_card && <span className="text-danger">{errors.credit_card.message}</span>}
                     </div>
+
+                    {/* Expiration Date */}
                     <div className="mb-3">
                         <label className="form-label">Expiration Date</label>
                         <input
-                            {...register('credit_expire', { required: 'Expiration date is required' })}
+                            {...register('credit_expire', {
+                                required: 'Expiration date is required',
+                                pattern: {
+                                    value: /^(0[1-9]|1[0-2])\/\d{2}$/,
+                                    message: 'Expiration date must be in MM/YY format.'
+                                }
+                            })}
                             type="text"
                             className="form-control"
                         />
                         {errors.credit_expire && <span className="text-danger">{errors.credit_expire.message}</span>}
                     </div>
+
+                    {/* CVV */}
                     <div className="mb-3">
                         <label className="form-label">CVV</label>
                         <input
-                            {...register('credit_cvv', { required: 'CVV is required' })}
+                            {...register('credit_cvv', {
+                                required: 'CVV is required',
+                                pattern: {
+                                    value: /^\d{3}$/,
+                                    message: 'CVV must be 3 digits.'
+                                }
+                            })}
                             type="text"
                             className="form-control"
                         />
                         {errors.credit_cvv && <span className="text-danger">{errors.credit_cvv.message}</span>}
                     </div>
-                    <button type="submit" className="btn btn-primary btn-lg w-100">Complete Purchase</button>
+
+                    <button type="submit" className="btn btn-primary btn-lg w-100 cart-btn">Complete Purchase</button>
                 </form>
             </div>
         </div>
