@@ -57,6 +57,13 @@ export default function Login() {
                     </div>
                     <div className="d-flex justify-content-center">
                         <button type="submit" className="btn btn-primary btn-lg me-2 cart-btn">Login</button>
+                        <button 
+                            type="button" 
+                            className="btn btn-secondary btn-lg go-back-btn" 
+                            onClick={() => navigate('/signup')}
+                        >
+                            Sign Up
+                        </button>
                     </div>
                 </form>
             </div>
